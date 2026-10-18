@@ -23,5 +23,5 @@ const descriptor = await verifyDesktopRuntime(paths.dsh, readDesktopRuntime(path
   resolveDesktopPackageTarget(target))
 if (windows && !values.unsigned) await verifyWindowsCode(application)
 // The Linux Host is the bundled Node, which cannot read ASAR, so its tree is unpacked.
-const dsh = linux ? join(resources, 'app.asar.unpacked', 'dsh') : join(resources, 'app.asar', 'dsh')
+const dsh = linux ? join(resources, 'dsh') : join(resources, 'app.asar', 'dsh')
 await smokePreparedRuntime(dsh, executable, join(resources, 'runtime'), descriptor)

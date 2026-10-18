@@ -176,7 +176,7 @@ function runtimeResources(primaryRuntime: string): RuntimeResources {
       : join(process.resourcesPath, 'runtime', 'primary-runtime', 'dependencies', 'pnpm', 'bin', 'pnpm.mjs'))
   const dsh = (development ? process.env.DSH_DESKTOP_DSH_DIR : undefined)
     ?? (development ? join(app.getAppPath(), '.desktop-build', 'development', 'project')
-      : linux ? join(process.resourcesPath, 'app.asar.unpacked', 'dsh') : join(app.getAppPath(), 'dsh'))
+      : linux ? join(process.resourcesPath, 'dsh') : join(app.getAppPath(), 'dsh'))
   return { node, nodeBin, pnpm, dsh }
 }
 
