@@ -97,7 +97,7 @@ const recovery = new DesktopFatalRecovery({
   show: options => dialog.showMessageBox(options),
   stop: () => { shuttingDown = true; return stopForRecovery() },
   disablePlugins: async () => {
-    const manager = new DesktopProjectManager(resolveDesktopPaths(), runtimeResources())
+    const manager = new DesktopProjectManager(resolveDesktopPaths(), runtimeResources(resolvedPrimaryRuntime()))
     const backupPath = await manager.disableAllPlugins()
     console.info('Desktop profile recovery completed:', { profilePatchBackup: backupPath ?? null, homePatch: 'unchanged' })
   },
@@ -150,15 +150,33 @@ interface RuntimeResources {
   readonly dsh: string
 }
 
-function runtimeResources(): RuntimeResources {
+/**
+ * Resolve the primary-runtime directory the current launch uses.
+ * @returns Bundled Node, pnpm and Python payload directory.
+ */
+function resolvedPrimaryRuntime(): string {
+  return app.isPackaged ? join(process.resourcesPath, 'runtime', 'primary-runtime') : developmentPrimaryRuntime()
+}
+
+/**
+ * Resolve the Host executable and the immutable package tree it loads.
+ * @param primaryRuntime - Resolved primary-runtime directory holding the bundled Node.
+ * @returns Host executable, launcher bin directory, pnpm entry and dsh tree.
+ */
+function runtimeResources(primaryRuntime: string): RuntimeResources {
   const development = !app.isPackaged
-  const node = process.execPath
+  // Electron's Linux Node mode leaks system glib symbols into libvips, which crashes sharp's
+  // image decode. The Host therefore runs under the bundled Node on Linux, and that Node cannot
+  // read ASAR archives, so the packaged Linux tree is unpacked beside the archive.
+  const linux = process.platform === 'linux'
+  const node = linux ? join(primaryRuntime, 'dependencies', 'node', 'bin', 'node') : process.execPath
   const nodeBin = development ? join(app.getAppPath(), 'scripts', 'node-bin') : join(process.resourcesPath, 'runtime', 'bin')
   const pnpm = (development ? process.env.DSH_DESKTOP_PNPM_ENTRY : undefined)
     ?? (development ? join(app.getAppPath(), 'node_modules', 'pnpm', 'bin', 'pnpm.mjs')
       : join(process.resourcesPath, 'runtime', 'primary-runtime', 'dependencies', 'pnpm', 'bin', 'pnpm.mjs'))
   const dsh = (development ? process.env.DSH_DESKTOP_DSH_DIR : undefined)
-    ?? (development ? join(app.getAppPath(), '.desktop-build', 'development', 'project') : join(app.getAppPath(), 'dsh'))
+    ?? (development ? join(app.getAppPath(), '.desktop-build', 'development', 'project')
+      : linux ? join(process.resourcesPath, 'app.asar.unpacked', 'dsh') : join(app.getAppPath(), 'dsh'))
   return { node, nodeBin, pnpm, dsh }
 }
 
@@ -319,12 +337,10 @@ async function main(): Promise<void> {
   void pruneCrashReports(app.getPath('logs'))
   const journalDirectory = process.env.DSH_DESKTOP_UPDATE_JOURNAL_DIR
   const updateJournal = journalDirectory === undefined ? undefined : new DesktopUpdateJournal(journalDirectory, app.getVersion())
-  const resources = runtimeResources()
-  const paths = resolveDesktopPaths()
   const development = !app.isPackaged
-  const primaryRuntime = development
-    ? developmentPrimaryRuntime()
-    : join(process.resourcesPath, 'runtime', 'primary-runtime')
+  const primaryRuntime = resolvedPrimaryRuntime()
+  const resources = runtimeResources(primaryRuntime)
+  const paths = resolveDesktopPaths()
   const activeProject = paths.profile
   const manager = new DesktopProjectManager(paths, resources)
   // Dock and Finder launches inherit only launchd's environment; every Host shares one login-shell read.

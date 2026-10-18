@@ -22,4 +22,6 @@ const executable = windows ? join(application, 'DeepSeek Harness.exe')
 const descriptor = await verifyDesktopRuntime(paths.dsh, readDesktopRuntime(paths.dsh).release.version,
   resolveDesktopPackageTarget(target))
 if (windows && !values.unsigned) await verifyWindowsCode(application)
-await smokePreparedRuntime(join(resources, 'app.asar', 'dsh'), executable, join(resources, 'runtime'), descriptor)
+// The Linux Host is the bundled Node, which cannot read ASAR, so its tree is unpacked.
+const dsh = linux ? join(resources, 'app.asar.unpacked', 'dsh') : join(resources, 'app.asar', 'dsh')
+await smokePreparedRuntime(dsh, executable, join(resources, 'runtime'), descriptor)
