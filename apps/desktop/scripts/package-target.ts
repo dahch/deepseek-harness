@@ -7,6 +7,7 @@ import { join, resolve } from 'node:path'
 import {
   desktopBuildRecordFilename,
   resolveDesktopAutoUpdateConfig,
+  type DesktopAutoUpdateTarget,
 } from './desktop-auto-update-environment.mjs'
 import { desktopArtifactOutput, desktopTargetBuildPaths } from './desktop-build-paths.mjs'
 import { packageMacOSArtifacts, type DesktopPrepackagedArtifact } from './package-macos.ts'
@@ -140,6 +141,16 @@ function packageVersion(path: string, label: string): string {
   return manifest.version
 }
 
+/**
+ * Narrow a build target to one whose release writes an updater completion record.
+ * @param target - Selected Desktop package target.
+ * @returns The updater target directory name.
+ */
+function updateReleaseTarget(target: DesktopPackageTarget): DesktopAutoUpdateTarget {
+  if (target.name === 'linux-x64') throw new Error('desktop package: linux-x64 has no updater release record')
+  return target.name
+}
+
 function writeReleaseRecord(
   target: DesktopPackageTarget,
   environment: NodeJS.ProcessEnv,
@@ -153,7 +164,7 @@ function writeReleaseRecord(
   const buildVersion = resolveDesktopBuildVersion(environment, dshVersion)
   const packaged = resolveDesktopBuildCommit(environment)
   const update = resolveDesktopAutoUpdateConfig(environment, target.platform, target.arch)
-  const recordPath = join(artifactsRoot, desktopBuildRecordFilename(target.name))
+  const recordPath = join(artifactsRoot, desktopBuildRecordFilename(updateReleaseTarget(target)))
   const temporaryPath = `${recordPath}.tmp`
   writeFileSync(temporaryPath, `${JSON.stringify({
     schemaVersion: 1,
@@ -439,8 +450,11 @@ export async function packageTarget(
   const mac = target.platform === 'darwin' ? resolveMacOSPackageSettings(environment) : undefined
   const packArguments = mac === undefined ? [] : ['--concurrency', String(mac.packConcurrency)]
   const buildPaths = desktopTargetBuildPaths(target.name)
-  const releaseRecordPath = join(buildPaths.artifacts, desktopBuildRecordFilename(target.name))
-  if (!invocation.prepareOnly && !invocation.unsigned && !invocation.skipNotarization) {
+  // Linux has no updater target, so it writes no release completion record.
+  const releaseRecordPath = target.name === 'linux-x64'
+    ? undefined
+    : join(buildPaths.artifacts, desktopBuildRecordFilename(target.name))
+  if (releaseRecordPath !== undefined && !invocation.prepareOnly && !invocation.unsigned && !invocation.skipNotarization) {
     rmSync(releaseRecordPath, { force: true })
     rmSync(`${releaseRecordPath}.tmp`, { force: true })
   }
