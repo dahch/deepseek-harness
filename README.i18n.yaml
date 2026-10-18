@@ -18,8 +18,8 @@
   en: 06853ecee3d6e5f2
   zh: 44173a10f89a3778
 /deepseek-harness/linux-build-unofficial/prerequisites/runtime:
-  en: df4c509c5fda703e
-  zh: efc8a27e097a27ea
+  en: b4e74e6b6f85973f
+  zh: d6b95a8e575622e2
 /deepseek-harness/linux-build-unofficial/prerequisites/build:
   en: 6397def043c29f7f
   zh: 033d285fdbe3ae39
@@ -39,8 +39,8 @@
   en: 9cbbf602bd83d831
   zh: 688086fc3c1b59b2
 /deepseek-harness/linux-build-unofficial/what-was-tested:
-  en: bc0237cdf5abb875
-  zh: 7c8eeb06873b71bb
+  en: 87f362c712b34d84
+  zh: 86c0d6255dc091ff
 /deepseek-harness/linux-build-unofficial/why-the-host-does-not-use-electron-s-node-on-linux:
   en: b864fe072f1d0f65
   zh: 9276e7ed48d1b6e4

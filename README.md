@@ -45,7 +45,7 @@ Only this setup was tested. X11, other distributions, ARM64, and other GPU vendo
   sudo dnf install libxcrypt-compat
   ```
 
-  Fedora 44 does not install `libcrypt.so.1` by default (`libxcrypt-compat` is a separate package). The bundled Python's `_crypt` extension links against it, so `import crypt` fails without the compatibility package. On the tested machine the Desktop GUI itself started without the system package installed, so this is primarily a bundled-Python requirement; install it to match the tested environment.
+  Fedora 44 does not install `libcrypt.so.1` by default (`libxcrypt-compat` is a separate package). The bundled Python's `_crypt` extension links against it, so `import crypt` fails without the compatibility package. The GUI itself does not appear to need it for startup, but install it to match the tested environment and to keep the bundled Python's `crypt` module working.
 
 - **~1.1 GB free disk** for the installed RPM payload (the installed size reported by RPM is 1,096,554,466 bytes). The build tree and AppImage need considerably more.
 
@@ -149,16 +149,21 @@ This build reports `Signature: (none)`. The hash check is the only integrity che
 
 ### What was tested
 
-- The unpacked Linux application launched on the setup above and opened the `dsh-app://` window.
-- The Desktop Host process ran under the bundled standalone Node (`resources/runtime/primary-runtime/dependencies/node/bin/node`), not Electron Node mode.
-- The renderer used Wayland (`--ozone-platform=wayland`).
-- A second launch exited with code 0 immediately.
-- Closing the main window exited the launched application process.
-- The AppImage was extracted and its payload inspected (not launched).
-- The RPM was inspected (not installed).
-- sharp worked under the bundled Node and crashed under Electron Node mode; the branch's workaround is described below.
+**Installed RPM** (`sudo dnf install`) on the setup above:
 
-Not tested in this pass: installing the RPM, launching the AppImage, X11, other distributions, ARM64, signing, auto-update, or the complete packaging pipeline from a clean clone.
+- Launches from the KDE application menu and launcher.
+- A second launch focuses the existing window.
+- Additional windows/workspaces open.
+- Closing the main window leaves no Electron or Host processes.
+- `rpm -V` reports no changes.
+
+**Packaged tree** (`linux-unpacked`) and smoke checks:
+
+- The Host runs under the bundled standalone Node, and the renderer uses Wayland.
+- sharp works under the bundled Node and crashes under Electron Node mode.
+- `prepare:dsh`, packaged and assembled smoke checks pass.
+
+**Not tested:** image attachment and the integrated terminal from the GUI, launching the AppImage, X11, other distributions, ARM64, signing, auto-update, and the full pipeline from a clean clone.
 
 ### Why the Host does not use Electron's Node on Linux
 

@@ -45,7 +45,7 @@ DeepSeek Harness 处于 _开发者预览_ 阶段，正在快速迭代。**未来
   sudo dnf install libxcrypt-compat
   ```
 
-  Fedora 44 默认不安装 `libcrypt.so.1`（`libxcrypt-compat` 是独立软件包）。内置 Python 的 `_crypt` 扩展链接它，因此缺少兼容包时 `import crypt` 会失败。在测试机上，即使系统未安装该包，Desktop GUI 本身也能启动，所以这主要是内置 Python 的要求；安装它是为了与测试环境一致。
+  Fedora 44 默认不安装 `libcrypt.so.1`（`libxcrypt-compat` 是独立软件包）。内置 Python 的 `_crypt` 扩展链接它，因此缺少兼容包时 `import crypt` 会失败。GUI 本身启动时似乎不需要它，但请安装它以匹配测试环境，并保证内置 Python 的 `crypt` 模块可用。
 
 - **约 1.1 GB 可用磁盘**，用于安装 RPM 载荷（RPM 报告的安装大小为 1,096,554,466 字节）。构建目录和 AppImage 需要更多空间。
 
@@ -149,16 +149,21 @@ rpm -qpi deepseek-harness-0.2.1-rc.2-linux-x86_64-unsigned.rpm | grep -E 'Signat
 
 ### 已验证内容
 
-- 未解包的 Linux 应用在上述环境启动，并打开 `dsh-app://` 窗口。
-- Desktop Host 进程运行在内置独立 Node（`resources/runtime/primary-runtime/dependencies/node/bin/node`）下，而不是 Electron Node 模式。
-- 渲染进程使用 Wayland（`--ozone-platform=wayland`）。
-- 第二次启动立即以退出码 0 结束。
-- 关闭主窗口会退出所启动的应用进程。
-- AppImage 已解包并检查其载荷（未启动）。
-- RPM 已检查（未安装）。
-- sharp 在内置 Node 下正常，在 Electron Node 模式下崩溃；分支的规避方案见下文。
+**已安装 RPM**（`sudo dnf install`），环境同上：
 
-本次未测试：安装 RPM、启动 AppImage、X11、其他发行版、ARM64、签名、自动更新，或从干净 clone 执行完整打包流水线。
+- 可从 KDE 应用菜单和启动器启动。
+- 第二次启动会聚焦已有窗口。
+- 可以打开更多窗口/工作区。
+- 关闭主窗口后不留下 Electron 或 Host 进程。
+- `rpm -V` 报告无变更。
+
+**打包树**（`linux-unpacked`）与 smoke 检查：
+
+- Host 运行在内置独立 Node 下，渲染进程使用 Wayland。
+- sharp 在内置 Node 下正常，在 Electron Node 模式下崩溃。
+- `prepare:dsh`、打包 smoke 和 assembled smoke 检查通过。
+
+**未测试：** 从 GUI 发送图片附件和使用集成终端、启动 AppImage、X11、其他发行版、ARM64、签名、自动更新，以及从干净 clone 执行完整流水线。
 
 ### 为什么 Linux 上 Host 不使用 Electron 的 Node
 
