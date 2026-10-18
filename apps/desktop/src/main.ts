@@ -1075,9 +1075,15 @@ async function main(): Promise<void> {
     browserGuests.bind(window, (guest, name) => shortcuts.attachGuest(window, guest, name))
     shortcuts.attach(window)
     window.on('focus', automaticCheck)
-    // Closing hides: the page and the Host keep running, and the next show resumes the same document.
+    // macOS and Windows hide the window, keeping the page and Host running;
+    // Linux has no tray to restore it, so its close requests a quit instead.
     window.on('close', (event) => {
       if (quitting || shellInstallerOwnsQuit || sessionEnding) return
+      if (process.platform !== 'darwin' && process.platform !== 'win32') {
+        event.preventDefault()
+        app.quit()
+        return
+      }
       event.preventDefault()
       if (updateDialog.isOpen) { updateDialog.focus(); return }
       const hide = (): void => {
