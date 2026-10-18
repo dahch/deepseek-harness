@@ -7,7 +7,52 @@
   zh: 88a76d7f7f0b260e
 /deepseek-harness/developer-preview:
   en: 4ef4d8a71ac143f0
-  zh: 1bfc3149ba8e5543
+  zh: e0193601c4ba722d
+/deepseek-harness/linux-build-unofficial:
+  en: 8e5d6025713fce43
+  zh: a2d53f78d802765e
+/deepseek-harness/linux-build-unofficial/tested-setup:
+  en: 24b619cd88d35ae1
+  zh: 5d1e327f206ebe04
+/deepseek-harness/linux-build-unofficial/prerequisites:
+  en: 06853ecee3d6e5f2
+  zh: 44173a10f89a3778
+/deepseek-harness/linux-build-unofficial/prerequisites/runtime:
+  en: df4c509c5fda703e
+  zh: efc8a27e097a27ea
+/deepseek-harness/linux-build-unofficial/prerequisites/build:
+  en: 6397def043c29f7f
+  zh: 033d285fdbe3ae39
+/deepseek-harness/linux-build-unofficial/build:
+  en: b412f2977e02087b
+  zh: 02f6d08770844c6a
+/deepseek-harness/linux-build-unofficial/install:
+  en: 58f44a5f65d1359a
+  zh: b632925729b637c1
+/deepseek-harness/linux-build-unofficial/install/rpm:
+  en: 37ad08b376601033
+  zh: 64e0b0051af36b43
+/deepseek-harness/linux-build-unofficial/install/appimage:
+  en: 2bd7de34d254d4a8
+  zh: 52d8e5074ca56ab7
+/deepseek-harness/linux-build-unofficial/verify-the-sha-256:
+  en: 9cbbf602bd83d831
+  zh: 688086fc3c1b59b2
+/deepseek-harness/linux-build-unofficial/what-was-tested:
+  en: bc0237cdf5abb875
+  zh: 7c8eeb06873b71bb
+/deepseek-harness/linux-build-unofficial/why-the-host-does-not-use-electron-s-node-on-linux:
+  en: b864fe072f1d0f65
+  zh: 9276e7ed48d1b6e4
+/deepseek-harness/linux-build-unofficial/known-limitations:
+  en: 8c66da229270d974
+  zh: 301bdd56202a09a5
+/deepseek-harness/linux-build-unofficial/product-analytics:
+  en: f3df585c3efcd484
+  zh: 592930e5ce2a22e5
+/deepseek-harness/linux-build-unofficial/disclaimer:
+  en: 07fb0ebcab4e42e5
+  zh: eefc83c305c559b3
 /deepseek-harness/run:
   en: 4e0248e4c6474fc6
   zh: eb2fb8d78c7d6bc0
