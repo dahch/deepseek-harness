@@ -154,7 +154,9 @@ function requireReadableFile(environment, name) {
 export function validateDesktopPackageEnvironment(environment, target, options = {}) {
   resolveDesktopAppId(environment)
   resolveNpmRegistry(environment)
-  // Windows always resolves policy; macOS only for signed builds; a local Linux build has no policy.
+  // A local Linux build has no release policy, signing credentials, updater, or platform release settings.
+  if (target.platform === 'linux') return
+  // Windows always resolves policy; macOS only for signed builds.
   if (target.platform === 'win32' || (target.platform === 'darwin' && !options.unsigned)) resolveDesktopPolicyEnvironment(environment)
   if (target.platform === 'darwin') resolveMacOSPackageSettings(environment)
   else resolveWindowsPackageSettings(environment)
