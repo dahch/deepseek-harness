@@ -249,11 +249,18 @@ export function createElectronBuilderConfig(
       target: ['nsis'],
     },
     linux: {
-      icon: fileURLToPath(new URL('../resources/icon.png', import.meta.url)),
+      // Standard hicolor sizes; the source icon is 1104px and its own size directory is not themed.
+      icon: fileURLToPath(new URL('../resources/icons', import.meta.url)),
       category: 'Development',
+      // The repository's LICENSE names DeepSeek as the copyright holder.
+      maintainer: 'DeepSeek',
       // The product name contains a space, so the launcher and WM_CLASS use a stable dash name.
       executableName: 'deepseek-harness',
       target: ['rpm', 'AppImage'],
+    },
+    rpm: {
+      // RPM package names reject the product name's space.
+      packageName: 'deepseek-harness',
     },
     nsis: {
       installerSidebar: join(buildPaths.root, 'installer-ui', 'uninstaller-sidebar.bmp'),
